@@ -1,3 +1,4 @@
+import 'package:clockify_miniproject/Content/Views/activity_screen.dart';
 import 'package:clockify_miniproject/Content/Views/content_screen.dart';
 import 'package:clockify_miniproject/Loading/Views/loading_to_content.dart';
 import 'package:clockify_miniproject/Password/Views/password_screen.dart';
@@ -17,7 +18,8 @@ void main() {
         '/password' : (context) => PasswordScreen(),
         '/register' : (context) => RegisterScreen(),
         '/loading_content' : (context) => LoadingContentScreen(),
-        '/content' : (context) => ContentScreen()
+        '/content' : (context) => ContentScreen(),
+        '/activity' : (context) => ActivityScreen()
       },
     ),
   ));
