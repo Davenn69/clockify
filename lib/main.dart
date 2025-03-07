@@ -1,5 +1,6 @@
 import 'package:clockify_miniproject/Content/Views/activity_screen.dart';
 import 'package:clockify_miniproject/Content/Views/content_screen.dart';
+import 'package:clockify_miniproject/Detail/Views/detail_screen.dart';
 import 'package:clockify_miniproject/Loading/Views/loading_to_content.dart';
 import 'package:clockify_miniproject/Password/Views/password_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,8 @@ void main() {
         '/register' : (context) => RegisterScreen(),
         '/loading_content' : (context) => LoadingContentScreen(),
         '/content' : (context) => ContentScreen(),
-        '/activity' : (context) => ActivityScreen()
+        '/activity' : (context) => ActivityScreen(),
+        '/detail' : (context) => DetailScreen()
       },
     ),
   ));
