@@ -62,13 +62,7 @@ Widget SaveDeleteState(WidgetRef ref){
           Expanded(
               child: Container(
                   decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        Color(0xFF45CDDC),
-                        Color(0xFF2EBED9),
-                      ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter
-                      ),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(10)
                   ),
                   child: ElevatedButton(
@@ -83,7 +77,7 @@ Widget SaveDeleteState(WidgetRef ref){
                         style: GoogleFonts.nunitoSans(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Colors.white
+                            color: Colors.grey.shade500
                         ),
                       )
                   )
@@ -95,16 +89,23 @@ Widget SaveDeleteState(WidgetRef ref){
 }
 
 class DetailScreen extends ConsumerWidget{
-  Map<String, dynamic> data = {};
-  late Activity activity;
+  Activity activity;
+  DetailScreen({required this.activity});
   Widget build(BuildContext context, WidgetRef ref){
-    data = data.isNotEmpty ? data : ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    activity = data['activity'];
     final TextEditingController _descriptionController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF233971),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+            "Detail",
+          style: GoogleFonts.nunitoSans(
+            fontSize: 18,
+              color: Colors.white,
+            fontWeight: FontWeight.bold
+          ),
+        ),
       ),
       backgroundColor: Color(0xFF233971),
       body: SafeArea(
@@ -113,11 +114,7 @@ class DetailScreen extends ConsumerWidget{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Image.asset(
-                    width: 125,
-                    height: 125,
-                    "assets/images/clockify-medium.png"
-                ),
+                SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -198,7 +195,7 @@ class DetailScreen extends ConsumerWidget{
                         ),
                         SizedBox(height: 5),
                         Text(
-                          "${formatTime(activity.end_time)}",
+                          "${formatDate(activity.end_time)}",
                           style: GoogleFonts.nunitoSans(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
@@ -224,7 +221,7 @@ class DetailScreen extends ConsumerWidget{
                         Icon(
                           Icons.location_on_outlined,
                           size: 30,
-                          color: Colors.white,
+                          color: Color(0xFFF8D068),
                         ),
                         Text(
                           "${activity.location_lat} ${activity.location_lng}",
@@ -238,9 +235,8 @@ class DetailScreen extends ConsumerWidget{
                   ),
                 ),
                 SizedBox(height: 20),
-                SizedBox(
-                  width: 275,
-                  height: 100,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
                   child: TextFormField(
                     controller: _descriptionController,
                     keyboardType: TextInputType.text,
@@ -262,7 +258,8 @@ class DetailScreen extends ConsumerWidget{
                   ),
                 ),
                 SizedBox(height: 20),
-                SaveDeleteState(ref)
+                SaveDeleteState(ref),
+                SizedBox(height: 40)
               ],
             ),
           ),

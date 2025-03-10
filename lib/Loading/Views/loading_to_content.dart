@@ -2,8 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../models/TimeLocationState.dart';
+
+final timeLocationProvider = StateNotifierProvider<TimeLocationNotifier, TimeLocationState>((ref){
+  return TimeLocationNotifier();
+});
 
 class LoadingContentScreen extends StatefulWidget{
   LoadingContentScreen({super.key});
@@ -15,6 +22,7 @@ class LoadingContentScreenState extends State<LoadingContentScreen> with SingleT
 
   late AnimationController _controller;
   late Animation<double> _animation;
+
 
   void ContentReady(){
     _controller = AnimationController(

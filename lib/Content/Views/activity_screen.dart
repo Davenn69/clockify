@@ -2,6 +2,7 @@ import 'package:clockify_miniproject/models/HistoryState.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final _selectedChoiceProvider = StateProvider<String?>((ref)=>"Latest Date");
@@ -29,86 +30,98 @@ Widget activityDateWidget(){
 }
 
 Widget activityHistoryWidget(){
-  return SizedBox(
-    width: double.infinity,
-    child: Container(
-      decoration: BoxDecoration(
-        border: Border(
-            bottom: BorderSide(
-                color: Colors.grey.withAlpha(100),
-                width: 1
-            )
+  return Slidable(
+    endActionPane: ActionPane(motion: const DrawerMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (BuildContext context) { Navigator.pushReplacementNamed(context, '/');},
+            backgroundColor: Colors.redAccent,
+            icon: Icons.delete,
+
+          ),
+        ]
+    ),
+    child: SizedBox(
+      width: double.infinity,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+                  color: Colors.grey.withAlpha(100),
+                  width: 1
+              )
+          ),
+          color: Colors.transparent,
         ),
-        color: Colors.transparent,
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "00 : 30 : 22",
-                  style: GoogleFonts.nunitoSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "00 : 30 : 22",
+                    style: GoogleFonts.nunitoSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white
+                    ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.lock_clock,
-                      color: Colors.grey,
-                      size: 20,
-                    ),
-                    Text(
-                      "12:00:00 - 12:30:22",
-                      style: GoogleFonts.nunitoSans(
-                          fontSize: 12,
-                          color: Colors.grey
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        Icons.lock_clock,
+                        color: Colors.grey,
+                        size: 20,
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  "Treadmill",
-                  style: GoogleFonts.nunitoSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white
+                      Text(
+                        "12:00:00 - 12:30:22",
+                        style: GoogleFonts.nunitoSans(
+                            fontSize: 12,
+                            color: Colors.grey
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      color: Colors.grey,
-                      size: 20,
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Text(
+                    "Treadmill",
+                    style: GoogleFonts.nunitoSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white
                     ),
-                    Text(
-                      "12:00:00 - 12:30:22",
-                      style: GoogleFonts.nunitoSans(
-                          fontSize: 12,
-                          color: Colors.grey
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.grey,
+                        size: 20,
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
+                      Text(
+                        "12:00:00 - 12:30:22",
+                        style: GoogleFonts.nunitoSans(
+                            fontSize: 12,
+                            color: Colors.grey
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     ),
@@ -133,11 +146,16 @@ class ActivityScreen extends ConsumerWidget{
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Image.asset(
-                      width: 125,
-                      height: 125,
-                      "assets/images/clockify-medium.png"
+                  SizedBox(height: 40),
+                  Hero(
+                    tag: 'logo',
+                    child: Image.asset(
+                        "assets/images/clockify-medium.png",
+                        width: 200,
+                        fit: BoxFit.cover
+                    ),
                   ),
+                  SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
@@ -186,29 +204,29 @@ class ActivityScreen extends ConsumerWidget{
                     padding: const EdgeInsets.symmetric(horizontal: 13),
                     child: Row(
                       children: <Widget>[
-                        SizedBox(
-                          width: 190,
-                          child: Expanded(
-                              child: TextFormField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                  hintText: "Search Activity...",
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  suffixIcon: Icon(
-                                    Icons.search,
-                                    size: 30,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20)
-                                  )
+                        Expanded(
+                          flex: 3,
+                            child: TextFormField(
+                              controller: _searchController,
+                              decoration: InputDecoration(
+                                hintText: "Search Activity...",
+                                filled: true,
+                                fillColor: Colors.white,
+                                suffixIcon: Icon(
+                                  Icons.search,
+                                  size: 30,
                                 ),
-                              )
-                          ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20)
+                                )
+                              ),
+                            )
                         ),
                         SizedBox(width: 10),
                         Expanded(
+                          flex: 2,
                             child: DropdownButtonFormField<String>(
+                              isExpanded : true,
                               value: ref.read(_selectedChoiceProvider.notifier).state,
                               onChanged: (String? value){
                                 ref.read(_selectedChoiceProvider.notifier).state = value;

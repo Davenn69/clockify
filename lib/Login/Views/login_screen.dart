@@ -13,9 +13,9 @@ class LoginScreen extends StatefulWidget{
 class LoginScreenState extends State<LoginScreen>{
   final TextEditingController _emailController = TextEditingController();
 
-  Route _createRouteForPasswordScreen(){
+  Route _createRouteForPasswordScreen(String email){
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondAnimation)=>PasswordScreen(),
+        pageBuilder: (context, animation, secondAnimation)=>PasswordScreen(email: email,),
       transitionDuration: Duration(milliseconds: 400),
       reverseTransitionDuration: Duration(milliseconds: 400),
       transitionsBuilder: (context, animation, secondAnimation, child){
@@ -114,7 +114,7 @@ class LoginScreenState extends State<LoginScreen>{
                         shadowColor: Colors.transparent
                       ),
                       onPressed: (){
-                        Navigator.of(context).push(_createRouteForPasswordScreen());
+                        Navigator.of(context).push(_createRouteForPasswordScreen(_emailController.text));
                       },
                       child: Text(
                         "SIGN IN",

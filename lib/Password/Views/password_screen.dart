@@ -2,11 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 
 final isVisibleProvider = StateProvider<bool>((ref)=>true);
 
 class PasswordScreen extends ConsumerWidget {
   final TextEditingController _passwordController = TextEditingController();
+  late String email;
+
+  PasswordScreen({super.key, required this.email});
+
+  void setSessionKey(String email)async{
+    final collection = await BoxCollection.open("MyAppCollection", {'sessionBox'});
+    final sessionBox = await collection.openBox('sessionBox');
+
+    final data = await sessionBox.put('sessionData', email);
+    print(email);
+  }
 
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isVisible = ref.watch(isVisibleProvider);
@@ -79,7 +91,8 @@ class PasswordScreen extends ConsumerWidget {
                         shadowColor: Colors.transparent
                       ),
                         onPressed: (){
-                          Navigator.pushReplacementNamed(context, "/loading_content");
+                        setSessionKey(email);
+                        Navigator.pushReplacementNamed(context, "/loading_content");
                         },
                         child: Text(
                             "OK",
