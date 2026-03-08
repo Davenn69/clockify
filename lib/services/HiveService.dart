@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../data/Activity.dart';
 import '../data/ActivityHive.dart';
 
 class HiveService{
@@ -10,8 +11,10 @@ class HiveService{
     activityBox = box;
   }
 
-  static Future<void> saveActivity(ActivityHive activity) async {
-    await activityBox.put(activity.uuid, activity.toMap());
+  static Future<void> saveActivity(Activity activity) async {
+    List<ActivityHive> allActivities = await getAllActivities();
+    await activityBox.put("${allActivities.length+1}", activity.toMap('${allActivities.length+1}'));
+    print(allActivities.length+1);
   }
 
   static Future<List<ActivityHive>> getAllActivities() async {
@@ -41,16 +44,8 @@ class HiveService{
     );
   }
 
-  static Future<void> printAllActivities() async {
-    final keys = await activityBox.getAllKeys();
-
-    for (var key in keys) {
-      final data = await activityBox.get(key);
-      if (data != null && data is Map) {
-        ActivityHive activity = mapToActivity(Map<String, dynamic>.from(data));
-        print(activity.description);
-      }
-    }
+  static Future<void> deleteActivity(String uuid)async {
+    await activityBox.delete(uuid);
   }
 
 }

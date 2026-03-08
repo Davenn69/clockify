@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clockify_miniproject/Content/Views/activity_screen.dart';
 import 'package:clockify_miniproject/data/ActivityHive.dart';
 import 'package:clockify_miniproject/models/TimeLocationState.dart';
 import 'package:clockify_miniproject/services/HiveService.dart';
@@ -10,6 +11,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+
+import '../../data/Activity.dart';
 
 final _selectedProvider = StateProvider<int>((ref)=>0);
 final _isStart = StateProvider<bool>((ref)=>true);
@@ -24,11 +27,25 @@ final _stopWatchTimerProvider = StateProvider<StopWatchTimer>((ref){
 final stopWatchTimeProvider = StreamProvider<int>((ref){
  final stopWatch = ref.watch(_stopWatchTimerProvider);
  return stopWatch.rawTime;
-}
-);
+});
 final timeLocationProvider = StateNotifierProvider<TimeLocationNotifier, TimeLocationState>((ref){
   return TimeLocationNotifier();
 });
+
+Route _createRouteForActivity(){
+  return PageRouteBuilder(
+      pageBuilder: (context, animation, secondAnimation)=>ActivityScreen(),
+      transitionDuration: Duration(milliseconds: 400),
+      reverseTransitionDuration: Duration(milliseconds: 400),
+      transitionsBuilder: (context, animation, secondAnimation, child){
+        var tween = Tween(begin: Offset(1.0, 0), end: Offset.zero).chain(CurveTween(curve: Curves.easeInOut));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(position: offsetAnimation, child: child);
+      }
+  );
+
+}
 
 Widget StartState(WidgetRef ref, StateProvider<bool> provider, void Function(WidgetRef, TimeLocationNotifier) startTimer, TimeLocationNotifier notifier){
   // print(ref.read(provider.notifier).state);
@@ -65,11 +82,11 @@ Widget StartState(WidgetRef ref, StateProvider<bool> provider, void Function(Wid
   );
 }
 
-Widget NotStartState(WidgetRef ref, StateProvider<bool> isResetStop, StateProvider<bool> isStart, void Function(WidgetRef, TimeLocationNotifier) stopTimer, void Function(WidgetRef, TimeLocationNotifier) resetTimer, TimeLocationNotifier notifier, ActivityHive activity){
-  return ref.read(isResetStop.notifier).state ? ResetStopState(ref, isResetStop, isStart, stopTimer, resetTimer, notifier) : SaveDeleteState(ref, isResetStop, isStart, notifier, resetTimer, activity);
+Widget NotStartState(WidgetRef ref, StateProvider<bool> isResetStop, StateProvider<bool> isStart, void Function(WidgetRef, TimeLocationNotifier) stopTimer, void Function(WidgetRef, TimeLocationNotifier) resetTimer, TimeLocationNotifier notifier,TextEditingController controller, Activity activity, BuildContext context){
+  return ref.read(isResetStop.notifier).state ? ResetStopState(ref, isResetStop, isStart, stopTimer, resetTimer, notifier) : SaveDeleteState(ref, isResetStop, isStart, notifier, resetTimer, activity, controller, context);
 }
 
-Widget SaveDeleteState(WidgetRef ref, StateProvider<bool> provider1, StateProvider<bool> provider2, TimeLocationNotifier notifier, void Function(WidgetRef, TimeLocationNotifier) resetTimer, ActivityHive activity){
+Widget SaveDeleteState(WidgetRef ref, StateProvider<bool> provider1, StateProvider<bool> provider2, TimeLocationNotifier notifier, void Function(WidgetRef, TimeLocationNotifier) resetTimer, Activity activity, TextEditingController controller, BuildContext context){
   final resetStopCondition = ref.watch(_isResetStop);
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -93,19 +110,24 @@ Widget SaveDeleteState(WidgetRef ref, StateProvider<bool> provider1, StateProvid
                           shadowColor: Colors.transparent
                       ),
                       onPressed: ()async{
+                        if(controller.text.isEmpty){
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Description must be filled")));
+                        }else{
+                          print(activity.uuid);
+                          await HiveService.saveActivity(activity);
 
-                        // final collection = await BoxCollection.open("MyAppCollection", {'activityBox'});
-                        // final CollectionBox<Map> activityBox = await collection.openBox<Map>('activityBox');
-                        // HiveService service = HiveService(activityBox: activityBox);
-                        await HiveService.saveActivity(activity);
+                          List<ActivityHive> activities = await HiveService.getAllActivities();
+                          for(var item in activities){
+                            print(item.description);
+                          }
 
-                        List<ActivityHive> activities = await HiveService.getAllActivities();
-                        for(var item in activities){
-                          print(item.description);
+
+                          ref.read(provider1.notifier).state = !ref.read(provider1.notifier).state;
+                          ref.read(provider2.notifier).state = !ref.read(provider2.notifier).state;
+                          resetTimer(ref, notifier);
+
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Save Successful")));
                         }
-                        ref.read(provider1.notifier).state = !ref.read(provider1.notifier).state;
-                        ref.read(provider2.notifier).state = !ref.read(provider2.notifier).state;
-                        resetTimer(ref, notifier);
                       },
                       child: Text(
                         "SAVE",
@@ -257,6 +279,7 @@ class ContentScreen extends ConsumerWidget{
     final stopWatchTimer = ref.watch(_stopWatchTimerProvider);
     final state = ref.watch(timeLocationProvider);
     final notifier = ref.read(timeLocationProvider.notifier);
+    final _formKey = GlobalKey<FormState>();
 
     if(state.geolocation == null){
       Future.delayed(Duration.zero, () {
@@ -291,19 +314,24 @@ class ContentScreen extends ConsumerWidget{
                   ),
                   SizedBox(height: 40),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           GestureDetector(
                             onTap: (){},
-                            child: Text(
-                                "Timer",
-                              style: GoogleFonts.nunitoSans(
-                                color: Color(0xFFF8D068),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18
+                            child: Hero(
+                              tag: 'Timer',
+                              child: Text(
+                                  "Timer",
+                                style: GoogleFonts.nunitoSans(
+                                  color: Color(0xFFF8D068),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20
+                                ),
                               ),
                             ),
                           ),
@@ -322,14 +350,17 @@ class ContentScreen extends ConsumerWidget{
                       ),
                       GestureDetector(
                         onTap:(){
-                          Navigator.pushReplacementNamed(context, "/activity");
+                          Navigator.of(context).push(_createRouteForActivity());
                         },
-                        child: Text(
-                          "Activity",
-                          style: GoogleFonts.nunitoSans(
-                              color: ref.read(_selectedProvider.notifier).state == 1 ? Color(0xFFF8D068):Colors.grey.shade500,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18
+                        child: Hero(
+                          tag: 'Activity',
+                          child: Text(
+                            "Activity",
+                            style: GoogleFonts.nunitoSans(
+                                color: ref.read(_selectedProvider.notifier).state == 1 ? Color(0xFFF8D068):Colors.grey.shade500,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18
+                            ),
                           ),
                         ),
                       ),
@@ -467,17 +498,16 @@ class ContentScreen extends ConsumerWidget{
                     ),
                   ),
                   SizedBox(height: 20),
-                  condition ? StartState(ref, _isStart, startTimer, notifier) : NotStartState(ref, _isResetStop, _isStart, stopTimer, resetTimer, notifier, ActivityHive(
-                    uuid: "8",
+                  condition ? StartState(ref, _isStart, startTimer, notifier) : NotStartState(ref, _isResetStop, _isStart, stopTimer, resetTimer, notifier, _descriptionController, Activity(
                     description: _descriptionController.text,
-                    start_time: state.startTime,
-                    end_time: state.endTime,
+                    start_time:  state.startTime ?? DateTime.now(),
+                    end_time: state.endTime ?? DateTime.now(),
                     location_lat: 12.0913,
                     location_lng: 12.9213,
-                    created_at: state.startTime,
+                    created_at: DateTime.now(),
                     updated_at: DateTime(2024, 3, 2, 6, 50),
                     useruuid: "user_002",
-                  ),),
+                  ),context),
                   SizedBox(height: 40)
                 ],
               ),

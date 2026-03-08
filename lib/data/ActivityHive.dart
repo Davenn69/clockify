@@ -11,10 +11,10 @@ class ActivityHive extends HiveObject{
   String description;
 
   @HiveField(2)
-  DateTime? start_time;
+  DateTime start_time;
 
   @HiveField(3)
-  DateTime? end_time;
+  DateTime end_time;
 
   @HiveField(4)
   double location_lat;
@@ -23,10 +23,10 @@ class ActivityHive extends HiveObject{
   double location_lng;
 
   @HiveField(6)
-  DateTime? created_at;
+  DateTime created_at;
 
   @HiveField(7)
-  DateTime? updated_at;
+  DateTime updated_at;
 
   @HiveField(8)
   String useruuid;
@@ -43,7 +43,7 @@ class ActivityHive extends HiveObject{
     required this.useruuid,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(String uuid) {
     return {
       'uuid': uuid,
       'description': description,

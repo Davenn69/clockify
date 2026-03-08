@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../data/Activity.dart';
+import '../../data/ActivityHive.dart';
 
 String formatTime(DateTime? time) {
   return time != null ? DateFormat('hh:mm:ss').format(time) : "-";
@@ -89,10 +90,10 @@ Widget SaveDeleteState(WidgetRef ref){
 }
 
 class DetailScreen extends ConsumerWidget{
-  Activity activity;
+  ActivityHive activity;
   DetailScreen({required this.activity});
   Widget build(BuildContext context, WidgetRef ref){
-    final TextEditingController _descriptionController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -135,7 +136,7 @@ class DetailScreen extends ConsumerWidget{
                 ),
                 SizedBox(height: 80),
                 Text(
-                  formatDuration(activity.end_time.difference(activity.start_time)),
+                  formatDuration(activity.end_time!.difference(activity.start_time)),
                   style: GoogleFonts.nunitoSans(
                       fontSize: 38,
                       fontWeight: FontWeight.bold,
@@ -238,7 +239,7 @@ class DetailScreen extends ConsumerWidget{
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30),
                   child: TextFormField(
-                    controller: _descriptionController,
+                    controller: descriptionController,
                     keyboardType: TextInputType.text,
                     maxLines: 5,
                     style: GoogleFonts.nunitoSans(

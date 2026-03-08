@@ -41,7 +41,7 @@ void main() async{
         '/loading_content' : (context) => LoadingContentScreen(),
         '/content' : (context) => ContentScreen(),
         '/activity' : (context) => ActivityScreen(),
-        '/detail' : (context) => DetailScreen(activity: Activity(uuid: '', description: '', start_time: DateTime.now(), end_time: DateTime.now()
+        '/detail' : (context) => DetailScreen(activity: ActivityHive(uuid: '', description: '', start_time: DateTime.now(), end_time: DateTime.now()
             , location_lat: 0, location_lng: 0, created_at: DateTime.now(), updated_at: DateTime.now(), useruuid: ""),)
       },
     ),
